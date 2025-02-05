@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Product List{% endblock title %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="breadcrumbs-inner">
+        <div class="row m-0">
+            
+            {% comment %} <div class="col-sm-8">
+                <div class="page-header float-right">
+                    <div class="page-title">
+                        <ol class="breadcrumb text-right">
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Product</a></li>
+                            <li class="active">List</li>
+                        </ol>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+        </div>
+    </div>
+</div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+{% comment %} <div style="justify-content: center;display: flex;align-items: center;">
+    <a href="{% url 'add_godown' %}"> <button id="payment-button" style="background-color: #05386b; border: green; padding: 10px;border-radius: 12px;" type="button" class="btn-info ">
+         <span id="payment-button-amount">Add godown  +</span>
+     </button> </a>
+   
+</div><br> {% endcomment %}
+
+
+
+<br>
+
+ <p>
+     
+     <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+       Filters
+     </button>
+   </p>
+   <div class="collapse" id="collapseExample">
+     <div class="card card-body" style="width: fit-content;">
+       
+ 
+       <form method="get" action="" style="padding:15px;">
+ 
+         {% csrf_token %}
+ 
+         <div class="form-group" style="display: flex;gap: 14px;">
+ 
+           <label for="name" class="control-label mb-1" style="margin-left : 0px;">Investor</label>
+                   {{ transactions_filter.form.investor }}
+                       
+                  
+            
+                   <label for="name" class="control-label mb-1" style="margin-left : 0px;">Operator</label>
+                       {{ transactions_filter.form.operator }}
+                 
+                       
+                   
+         </div>
+         
+         <div class="form-group" style="display: flex;gap: 14px;">
+
+               <label for="name" class="control-label mb-1" style="margin-left : 0px;">Entry Date From</label>
+               {{ transactions_filter.form.timestamp_from }}
+           
+       
+       
+               <label for="name" class="control-label mb-1">Entry Date To</label>
+               {{ transactions_filter.form.timestamp_to }}
+       
+               
+       </div>
+ 
+       <br>
+ 
+       <a href="{% url 'report' %}"><button class="btn btn-primary" type="button" > Reset </button></a>
+ 
+       <button class="btn btn-primary" type="submit" > Submit </button>
+     </div>
+ 
+   </form>
+ </div>
+
+ 
+<button class="btn btn-primary" onclick="report();" type="submit">
+    Download Report
+  </button> 
+  
+
+
+
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="box-title"> List Transactions </h4>
+            </div>
+            <div class="card-body--">
+                <div class="table-stats order-table ov-h">
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th class="serial">#</th>
+
+                                {% if request.user.is_superuser %}
+                                
+                                    <th>Operator</th>
+
+                                {% endif %}
+                                
+                                <th>Investor</th>
+                                <th>Amount</th>
+                                <th>Remark</th>
+                                <th>Timestamp</th>
+                                <th>Actions</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data %}
+                            {% for i in data %}
+                            <tr>
+                                <td class="serial">{{ forloop.counter }}</td>
+
+                                {% if request.user.is_superuser %}
+
+                                    <td>{{ i.operator }}</td>
+
+                                {% endif %}
+
+                                <td>{{ i.investor }}</td>
+                                <td>{{ i.amount }}</td>
+                                <td>{{ i.remark }}</td>
+                                <td>{{ i.timestamp }}</td>
+                                <td>  
+                                    <a href="{% url 'update_transactions' i.id %}"> <button id="payment-button"  style="background-color: #05386b; border: green; padding: 10px;border-radius: 12px;" type="submit" class="btn-info ">
+                                        <span id="payment-button-amount">View</span>
+                                    </button>  </a>
+                                   
+                                    <a href="{% url 'delete_transactions' i.id %}"> <button id="payment-button"  style="background-color: red; border: green; padding: 10px;border-radius: 12px;" type="submit" class="btn-info ">
+                                        <span id="payment-button-amount">Delete</span>
+                                    </button>  </a>
+                                   
+
+                                </td>
+                               
+                               
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                                <tr><td>No Product Data</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div> <!-- /.table-stats -->
+            </div>
+        </div> <!-- /.card -->
+    </div>  <!-- /.col-lg-8 -->
+
+    
+</div>
+{% endblock content %}
+
+
+{% block js %}
+
+<script>
+ 
+  function report(){
+  
+    url = window.location.href
+    
+    url = url.split('?')
+    
+    url = url[1]
+    
+    url = "{% url 'report_download' %}" + '?' + url
+    
+    window.location = url
+    
+    }
+    
+    
+</script>
+
+{% endblock js %}
+
